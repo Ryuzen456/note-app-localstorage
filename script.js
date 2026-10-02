@@ -1,62 +1,57 @@
-function inputdata(event){
-    event.preventDefault();
-    let data1 = document.getElementById("note").value;
-    let data2 = document.getElementById("label").value;
+function inputdata(event) {
+  event.preventDefault();
+  let data1 = document.getElementById("note").value;
+  let data2 = document.getElementById("keterangan").value;
 
-    let siswa = JSON.parse(localStorage.getItem("siswa")) || [];
-    siswa.push({ note: data1, label: data2 });
-    localStorage.setItem("siswa", JSON.stringify(siswa));
-    tampilkan();
+  let siswa = JSON.parse(localStorage.getItem("siswa")) || [];
+  siswa.push({ note: data1, label: data2 });
+  localStorage.setItem("siswa", JSON.stringify(siswa));
+
+  event.target.reset();
+  tampilkan();
 }
 
 // tampil data local + tombol hapus per item
-function tampilkan(){
-    let data = JSON.parse(localStorage.getItem("siswa")) || [];
-    const ul = document.getElementById("data-tampil");
-    ul.innerHTML = "";
+function tampilkan() {
+  let data = JSON.parse(localStorage.getItem("siswa")) || [];
+  const ul = document.getElementById("data-tampil");
+  ul.innerHTML = "";
 
-    data.forEach((item, i) => {
-        const li = document.createElement("li");
+  data.forEach((item, i) => {
+    const li = document.createElement("li");
 
-        li.innerHTML = `
-            <span>${item.note} - ${item.label}</span>
+    const teks = document.createElement("span");
+    teks.textContent = `${item.note} - ${item.label}`;
 
-            <button class="btn-hapus" onclick="hapusSatu(${i}, this)">
-                <span class="tong-sampah">
-                    <span class="tutup-tong"></span>
-                    <span class="badan-tong"></span>
-                </span>
-            </button>
-        `;
+    const tombol = document.createElement("button");
+    tombol.type = "button";
+    tombol.className = "btn-hapus";
+    tombol.onclick = () => hapusSatu(i, tombol);
+    tombol.innerHTML = `
+      <span class="tong-sampah">
+        <span class="tutup-tong"></span>
+        <span class="badan-tong"></span>
+      </span>
+    `;
 
-        ul.appendChild(li);
-    });
+    li.appendChild(teks);
+    li.appendChild(tombol);
+    ul.appendChild(li);
+  });
 }
 
-
-function hapusSatu(index, tombol){
-    // buka tutup tong
-    tombol.classList.add("buka");
-
-    // tunggu animasi selesai
-    setTimeout(() => {
-        let data = JSON.parse(localStorage.getItem("siswa")) || [];
-
-        data.splice(index, 1);
-
-        localStorage.setItem("siswa", JSON.stringify(data));
-
-        tampilkan();
-    }, 500);
-}
-// hapus satu item berdasarkan index
-function hapusSatu(index) {
+// hapus satu item: konfirmasi, animasi tong sampah, lalu hapus
+function hapusSatu(index, tombol) {
   if (!confirm("Yakin ingin menghapus data ini?")) return;
 
-  let data = JSON.parse(localStorage.getItem("siswa")) || [];
-  data.splice(index, 1);
-  localStorage.setItem("siswa", JSON.stringify(data));
-  tampilkan();
+  tombol.classList.add("buka");
+
+  setTimeout(() => {
+    let data = JSON.parse(localStorage.getItem("siswa")) || [];
+    data.splice(index, 1);
+    localStorage.setItem("siswa", JSON.stringify(data));
+    tampilkan();
+  }, 500);
 }
 
 // hapus semua data
@@ -66,11 +61,6 @@ function deletedata() {
   localStorage.removeItem("siswa");
   tampilkan();
   alert("Data berhasil dihapus");
-}
-// hapus semua data
-function deletedata(){
-    localStorage.removeItem("siswa");
-    tampilkan();
 }
 
 tampilkan();
